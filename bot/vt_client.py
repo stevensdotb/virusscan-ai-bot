@@ -1,6 +1,6 @@
 import os
 import base64
-from typing import Dict, Any
+
 from vt import Client, APIError
 
 from .config import config
@@ -22,7 +22,7 @@ class VTClient:
         else:
             raise Exception(f"{self._error_codes.get(e.code, f'API Error ({e.code})')}: {e.message}")
 
-    async def analyze_file(self, file_path: str, retries=3, delay=10) -> Dict[str, Any]:
+    async def analyze_file(self, file_path: str, retries=3, delay=10) -> dict[str,any]:
         """Analyze a file using VirusTotal."""
         for _ in range(retries):
             try:
@@ -41,12 +41,12 @@ class VTClient:
             except APIError as e:
                 await self._handle_api_error(e, delay)
     
-    async def analyze_url(self, url: str, retries=3, delay=10) -> Dict[str, Any]:
+    async def analyze_url(self, url: str, retries=3, delay=10) -> dict[str, any]:
         """Analyze a URL using VirusTotal."""
         for _ in range(retries):
             try:
                 # Get URL analysis
-                analysis = await self.client.get_data_async(f'/urls/{url}')
+                analysis = await self.client.scan_url_async(url)
                 result = analysis.to_dict()
                 result.update({
                     'url': url,
@@ -55,9 +55,15 @@ class VTClient:
                 # Extract relevant information
                 return result
             except APIError as e:
-                await self._handle_api_error(e, delay) if e.code == 0 else None
+                await self._handle_api_error(e, delay)
 
     def _get_analysis_url(self, analysis_id: str) -> str:
+        # URL analysis
+        if analysis_id.startswith('u-'):
+            _, hash_value, _ = analysis_id.split('-')
+            return f"https://www.virustotal.com/gui/url/{hash_value}"
+        
+        # File analysis
         decode_id = base64.b64decode(analysis_id).decode('utf-8')
         hash_value, _ = decode_id.split(':')
         return f"https://www.virustotal.com/gui/file/{hash_value}/analysis"

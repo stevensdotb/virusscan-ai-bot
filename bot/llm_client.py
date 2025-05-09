@@ -2,7 +2,7 @@ from azure.ai.inference import ChatCompletionsClient
 from azure.core.credentials import AzureKeyCredential
 from azure.ai.inference.models import SystemMessage, UserMessage
 from azure.core.exceptions import AzureError
-from typing import Dict, Any
+
 from .config import config
 from .utils.logging import logger
 
@@ -39,7 +39,7 @@ class LLMClient:
 
         Describe the details without mentioning the file name.
 
-        Write everything in markdown format using bold, italics, etc.
+        Write everything in Markdown V2 and feel free to add bold, italics, etc.
         The language should be: {lang}
 
         At the end, ask if the user wants to analyze another file or URL.

@@ -1,7 +1,7 @@
 import gettext
 from pathlib import Path
 
-from config import config
+from .config import config
 
 class LocaleManager:
     """Class to manage locale translations."""

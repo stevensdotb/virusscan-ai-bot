@@ -1,6 +1,7 @@
 import os
 import json
 from urllib.parse import urlparse
+
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes
 from telegram.constants import ParseMode
@@ -116,7 +117,9 @@ class Handlers:
 
     async def bot_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """Handle bot messages (user text, files, urls)."""
+        self._set_lang(update.effective_user.language_code)
         _ = self._get_translation(self._lang[:2]).gettext
+
         user_message = update.message.text
 
         if self._is_url(user_message):
@@ -132,7 +135,7 @@ class Handlers:
             await self._response_message.edit_text(escaped_text, parse_mode=ParseMode.MARKDOWN_V2)
             self._response_message = None
         else:
-            await update.message.reply_text(escaped_text, parse_mode=ParseMode.MARKDOWN_V2)
+            await update.message.reply_text(response)
 
     async def get_file_analysis(self, update: Update, file) -> None:
         """Handle file uploads."""
