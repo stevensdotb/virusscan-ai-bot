@@ -1,0 +1,93 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: VScanAI Bot\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-05-07 22:05+0000\n"
+"PO-Revision-Date: 2025-05-07 22:05+0000\n"
+"Last-Translator: \n"
+"Language: en\n"
+"Language-Team: English\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: bot/handlers.py:85
+msgid "BOT_WELCOME_MESSAGE"
+msgstr "👋 Hi, {user.first_name}! 🤖 I'm {config.BOT_NAME} Bot"
+
+#: bot/handlers.py:86
+msgid "BOT_FUNCTION_DESCRIPTION"
+msgstr "I use VirusTotal and OpenAI to scan files, URLs, and generate responses based on the analysis."
+
+#: bot/handlers.py:87
+msgid "BOT_REQUEST_FILE_OR_URL"
+msgstr "🧐 Send me a file or URL. Large files may take longer to process"
+
+#: bot/handlers.py:60
+msgid "BOT_ERROR_INVALID_URL"
+msgstr "❌ Invalid URL. Please make sure the URL includes (http:// or https://), i.e https://google.com"
+
+#: bot/handlers.py:50
+msgid "BOT_PUBLIC_IP"
+msgstr "Your Public IP is: {ip}"
+
+#: bot/handlers.py:54
+msgid "BOT_ERROR_IP_RETRIEVAL"
+msgstr "❌ Error retrieving public IP. Please try again later."
+
+#: bot/handlers.py:73
+msgid "BOT_ERROR_URL_ANALYSIS"
+msgstr "❌ Sorry, there was an error analyzing the URL."
+
+#: bot/handlers.py:62
+msgid "BOT_STATUS_ANALYZING_URL"
+msgstr "⏳ Analyzing URL..."
+
+#: bot/handlers.py:36
+msgid "BOT_BUTTON_CHECK_IP"
+msgstr "What's my IP?"
+
+#: bot/handlers.py:137
+msgid "BOT_ERROR_FILE_TOO_LARGE"
+msgstr "❌ File too large. Please send files smaller than 5MB."
+
+#: bot/handlers.py:150
+msgid "BOT_STATUS_ANALYZING_FILE"
+msgstr "⏳ Analyzing file..."
+
+#: bot/handlers.py:152
+msgid "BOT_FILE_STATUS_SAFE"
+msgstr "✅ FILE SAFE"
+
+#: bot/handlers.py:154
+msgid "BOT_FILE_STATUS_DANGEROUS"
+msgstr "❌ FILE POTENTIALLY DANGEROUS"
+
+#: bot/handlers.py:156
+msgid "BOT_FILE_STATUS_SUSPICIOUS"
+msgstr "⚠️ FILE SUSPICIOUS"
+
+#: bot/handlers.py:157
+msgid "BOT_FILE_SUSPICIOUS_WARNING"
+msgstr "If you're not sure about the content of this file, it's better not to open it. Otherwise, open it with caution."
+
+#: bot/handlers.py:168
+msgid "BOT_ERROR_FILE_ANALYSIS"
+msgstr "☠️ Sorry, an error occurred while analyzing the file."
+
+#: bot/handlers.py:175
+msgid "BOT_FILE_TYPE"
+msgstr "File type: {file_type}"
+
+#: bot/handlers.py:176
+msgid "BOT_FILE_SIZE"
+msgstr "Size: {vt_result['file_size'] / 1024:.2f} KB"
+
+#: bot/handlers.py:177
+msgid "BOT_DETECTION_RESULTS"
+msgstr "Detection results:"
+
+#: bot/handlers.py:189
+msgid "BOT_NO_THREATS"
+msgstr "No known threats detected."

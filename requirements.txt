@@ -1,0 +1,5 @@
+python-telegram-bot>=20.0
+openai>=1.0.0
+python-dotenv>=1.0.0
+vt-py==0.20.0
+azure-ai-inference>=1.0.0b9
