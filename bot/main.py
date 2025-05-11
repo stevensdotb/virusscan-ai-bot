@@ -1,5 +1,5 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Depends
 from fastapi.responses import JSONResponse
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackQueryHandler
 from telegram import Update
@@ -47,15 +47,23 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 
+application: Application = None
+
+async def get_bot_app() -> Application:
+    if application is None:
+        raise RuntimeError("Application not initialized")
+    return application
+
+
 @app.post("/webhook")
-async def webhook(request: Request):
+async def webhook(request: Request, bot_app: Application = Depends(get_bot_app)):
     try:
         # Get the raw data from the request
         data = await request.json()
         
         # Process the update
-        update = Update.de_json(data, application.bot)
-        await application.process_update(update)
+        update = Update.de_json(data, bot_app.bot)
+        await bot_app.process_update(update)
         
         return JSONResponse(status_code=200, content={"status": "success"})
     except Exception as e:
