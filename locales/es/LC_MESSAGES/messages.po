@@ -13,13 +13,10 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgid "BOT_WELCOME_MESSAGE"
-msgstr "👋 ¡Hola, {user.first_name}! 🤖 Soy {config.BOT_NAME} Bot"
-
-msgid "BOT_FUNCTION_DESCRIPTION"
-msgstr "Uso VirusTotal y OpenAI para escanear archivos, URLs y generar respuestas basadas en el análisis."
+msgstr "👋 Hola, {user.first_name}! 🤖 Soy VScanAI, tu asistente para analizar archivos y URLs en busca de amenazas potenciales."
 
 msgid "BOT_REQUEST_FILE_OR_URL"
-msgstr "🧐 Envíame un archivo o una URL. Los archivos grandes pueden tardar más en procesarse"
+msgstr "🧐 ¿Te gustaría escanear un archivo o URL ahora? Los archivos grandes pueden tardar más en procesarse."
 
 msgid "BOT_ERROR_INVALID_URL"
 msgstr "❌ URL no válida. Por favor, asegúrate de que la URL incluya (http:// o https://). Por ejemplo, https://google.com"

@@ -90,7 +90,6 @@ class Handlers:
 
         await update.message.reply_text(
             _("BOT_WELCOME_MESSAGE").format(user=update.effective_user, config=config) + "\n\n"
-            + _("BOT_FUNCTION_DESCRIPTION") + "\n\n"
             + _("BOT_REQUEST_FILE_OR_URL"),
             reply_markup=reply_markup
         )
