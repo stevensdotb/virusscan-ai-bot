@@ -3,3 +3,5 @@ openai>=1.0.0
 python-dotenv>=1.0.0
 vt-py==0.20.0
 azure-ai-inference>=1.0.0b9
+fastapi>=0.115.12
+uvicorn>=0.34.2

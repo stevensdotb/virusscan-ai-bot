@@ -12,82 +12,65 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: bot/handlers.py:85
 msgid "BOT_WELCOME_MESSAGE"
 msgstr "👋 ¡Hola, {user.first_name}! 🤖 Soy {config.BOT_NAME} Bot"
 
-#: bot/handlers.py:86
 msgid "BOT_FUNCTION_DESCRIPTION"
 msgstr "Uso VirusTotal y OpenAI para escanear archivos, URLs y generar respuestas basadas en el análisis."
 
-#: bot/handlers.py:87
 msgid "BOT_REQUEST_FILE_OR_URL"
 msgstr "🧐 Envíame un archivo o una URL. Los archivos grandes pueden tardar más en procesarse"
 
-#: bot/handlers.py:60
 msgid "BOT_ERROR_INVALID_URL"
 msgstr "❌ URL no válida. Por favor, asegúrate de que la URL incluya (http:// o https://). Por ejemplo, https://google.com"
 
-#: bot/handlers.py:50
 msgid "BOT_PUBLIC_IP"
 msgstr "Tu IP pública es: {ip}"
 
-#: bot/handlers.py:54
 msgid "BOT_ERROR_IP_RETRIEVAL"
 msgstr "❌ Error obteniendo IP pública. Por favor, inténtalo de nuevo más tarde."
 
-#: bot/handlers.py:73
 msgid "BOT_ERROR_URL_ANALYSIS"
 msgstr "❌ Lo siento, hubo un error al analizar la URL."
 
-#: bot/handlers.py:62
 msgid "BOT_STATUS_ANALYZING_URL"
 msgstr "⏳ Analizando URL..."
 
-#: bot/handlers.py:36
 msgid "BOT_BUTTON_CHECK_IP"
 msgstr "¿Cuál es mi IP?"
 
-#: bot/handlers.py:137
 msgid "BOT_ERROR_FILE_TOO_LARGE"
 msgstr "❌ El archivo es demasiado grande. Por favor, envíe archivos menores a 5MB."
 
-#: bot/handlers.py:150
 msgid "BOT_STATUS_ANALYZING_FILE"
 msgstr "⏳ Analizando archivo..."
 
-#: bot/handlers.py:152
 msgid "BOT_FILE_STATUS_SAFE"
 msgstr "✅ ARCHIVO SEGURO"
 
-#: bot/handlers.py:154
 msgid "BOT_FILE_STATUS_DANGEROUS"
 msgstr "❌ ARCHIVO POTENCIALMENTE PELIGROSO"
 
-#: bot/handlers.py:156
 msgid "BOT_FILE_STATUS_SUSPICIOUS"
 msgstr "⚠️ ARCHIVO SOSPECHOSO"
 
-#: bot/handlers.py:157
 msgid "BOT_FILE_SUSPICIOUS_WARNING"
 msgstr "Si no estás seguro del contenido de este archivo es mejor no abrirlo, de lo contrario hazlo con precaución."
 
-#: bot/handlers.py:168
 msgid "BOT_ERROR_FILE_ANALYSIS"
 msgstr "☠️ Lo siento, ha ocurrido un error al analizar el archivo."
 
-#: bot/handlers.py:175
 msgid "BOT_FILE_TYPE"
 msgstr "Tipo de archivo: {file_type}"
 
-#: bot/handlers.py:176
 msgid "BOT_FILE_SIZE"
 msgstr "Tamaño: {vt_result['file_size'] / 1024:.2f} KB"
 
-#: bot/handlers.py:177
 msgid "BOT_DETECTION_RESULTS"
 msgstr "Resultados detallados:"
 
-#: bot/handlers.py:189
 msgid "BOT_NO_THREATS"
 msgstr "No se detectaron amenazas conocidas."
+
+msgid "BOT_CURRENTLY_FAILING"
+msgstr "🤖 Lo siento, parece que estoy teniendo problemas técnicos. Por favor, inténtalo de nuevo más tarde."

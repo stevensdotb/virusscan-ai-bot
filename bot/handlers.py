@@ -117,25 +117,28 @@ class Handlers:
 
     async def bot_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """Handle bot messages (user text, files, urls)."""
-        self._set_lang(update.effective_user.language_code)
-        _ = self._get_translation(self._lang[:2]).gettext
+        try:
+            self._set_lang(update.effective_user.language_code)
+            _ = self._get_translation(self._lang[:2]).gettext
 
-        user_message = update.message.text
+            user_message = update.message.text
 
-        if self._is_url(user_message):
-            user_message = json.dumps(await self.get_url_analysis(update, user_message))
+            if self._is_url(user_message):
+                user_message = json.dumps(await self.get_url_analysis(update, user_message))
+            
+            if file := await FileHandler.get_file(update.message):
+                user_message = json.dumps(await self.get_file_analysis(update, file))
+            
+            response = self._ai_response(user_message)
         
-        if file := await FileHandler.get_file(update.message):
-            user_message = json.dumps(await self.get_file_analysis(update, file))
-        
-        response = self._ai_response(user_message)
-        escaped_text = escape_markdown(response, version=2)
-    
-        if self._response_message is not None:
-            await self._response_message.edit_text(escaped_text, parse_mode=ParseMode.MARKDOWN_V2)
-            self._response_message = None
-        else:
-            await update.message.reply_text(response)
+            if self._response_message is not None:
+                await self._response_message.edit_text(response, parse_mode=ParseMode.HTML)
+                self._response_message = None
+            else:
+                await update.message.reply_text(response, parse_mode=ParseMode.HTML)
+        except Exception as e:
+            logger.error(_(f"Error with VirusTotal analysis: {str(e)}"))
+            await update.message.reply_text(_("BOT_ERROR_FILE_ANALYSIS"))
 
     async def get_file_analysis(self, update: Update, file) -> None:
         """Handle file uploads."""

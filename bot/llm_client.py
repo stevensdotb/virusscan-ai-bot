@@ -1,7 +1,7 @@
 from azure.ai.inference import ChatCompletionsClient
 from azure.core.credentials import AzureKeyCredential
 from azure.ai.inference.models import SystemMessage, UserMessage
-from azure.core.exceptions import AzureError
+from azure.core.exceptions import HttpResponseError
 
 from .config import config
 from .utils.logging import logger
@@ -21,30 +21,39 @@ class LLMClient:
         """
         system_prompt = f"""
         You are a bot named "{config.BOT_NAME}" that analyzes files and URLs to determine if they are malicious.
-        You will be provided with detailed VirusTotal analysis results and must provide a clear and friendly explanation.
-        Use emojis to make the response more friendly and clear.
+        You will be provided with the VirusTotal analysis results and must provide a clear, concise explanation.
+        Use emojis to make the response more friendly.
+        Describe the details without mentioning the file name.
 
         Your response format should be:
 
         For files:
         <emoji> FILE <status>:
-        File type: <file_type>
+        File type: <file_type> <KB/MB/GB>
         Size: <size>
-        Link: <link>
 
         For URLs:
         <emoji> URL <status>:
         URL type: <url_type>
-        Link: <link>
 
-        Describe the details without mentioning the file name.
+        Write the analysis results for files and urls in HTML format as telegram docs suggest https://core.telegram.org/bots/api#html-style 
+        - Add bold, italics, etc.
+        - For breaklines do it directly instead of using <br>.
+        - No nested tags are allowed.
+        - Use emojis without tag-emojis tag.
+        - Currently supported tags are: <b>, <strong>, <i>, <em>, <u>, <ins>, <s>, <strike>, <del>, <span class="tg-spoiler">, <tg-spoiler>, <a>, <tg-emoji>, <code>, <pre>, <blockquote>, <blockquote expandable>
 
-        Write everything in Markdown V2 and feel free to add bold, italics, etc.
-        The language should be: {lang}
+        For the file status use the following emojis:
+        - ✅: For safe files/urls
+        - ⚠️: For suspicious files/urls
+        - ❌: For malicious files/urls
 
-        At the end, ask if the user wants to analyze another file or URL.
+        The language should be '{lang}' and not based on the user's language from text message.
 
-        If the user wants to start a conversation, you can only discuss topics related to the bot's functionality:
+        At the end, add the <link> tag to the VirusTotal analysis and ask if the user wants to analyze another file or URL.
+
+        If the user wants to start a conversation, you can only discuss topics related to:
+        - Bot's functionality
         - Questions about the analysis information you provided.
         - Security information about preventing cyber attacks.
         - Files are analyzed in memory and not stored for any reason.
@@ -52,6 +61,7 @@ class LLMClient:
         - Greetings, thanks, etc. are allowed. Ignore stickers, gifs, and emojis sent by the user.
 
         For any other topics, briefly respond that you are not authorized to discuss them and ask if the user wants to analyze another file or URL.
+        You will always response in first person.
         """
         try:
             # Call GitHub model API
@@ -64,8 +74,10 @@ class LLMClient:
             )
             return response.choices[0].message.content
             
-        except AzureError as e:
-            return str(e)
+        except HttpResponseError as e:
+            logger.error(f"Error with GitHub model: {e.status_code} ({e.reason})")
+            logger.error(f"{e.message}") 
+            return e.message
 
     def close(self):
         """Close the LLM client connection."""
