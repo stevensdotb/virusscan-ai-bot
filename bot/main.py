@@ -66,8 +66,3 @@ async def webhook(request: Request):
 @app.get("/")
 async def health_check():
     return JSONResponse(status_code=200, content={"status": "healthy"})
-
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
