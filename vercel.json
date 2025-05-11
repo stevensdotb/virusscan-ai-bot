@@ -16,10 +16,9 @@
       "dest": "app.py"
     }
   ],
-  "env": [
-    "TELEGRAM_BOT_TOKEN",
-    "OPENAI_API_KEY",
-    "VT_API_KEY",
-    "AZURE_API_KEY"
-  ]
+  "env": {
+    "TELEGRAM_BOT_TOKEN": "@TELEGRAM_BOT_TOKEN",
+    "OPENAI_API_KEY": "@OPENAI_API_KEY",
+    "VT_API_KEY": "@VT_API_KEY"
+  }
 }
