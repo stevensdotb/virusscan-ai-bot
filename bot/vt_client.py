@@ -5,6 +5,7 @@ from vt import Client, APIError
 
 from .config import config
 from .utils.logging import logger
+from .decorators import retry_on_reached_limit
 
 class VTClient:
     def __init__(self):
@@ -22,40 +23,34 @@ class VTClient:
         else:
             raise Exception(f"{self._error_codes.get(e.code, f'API Error ({e.code})')}: {e.message}")
 
-    async def analyze_file(self, file_path: str, retries=3, delay=10) -> dict[str,any]:
+    @retry_on_reached_limit(APIError, exception_handler=_handle_api_error, retries=3, delay=10)
+    async def analyze_file(self, file_path: str) -> dict[str,any]:
         """Analyze a file using VirusTotal."""
-        for _ in range(retries):
-            try:
-                # Upload the file
-                with open(file_path, 'rb') as f:
-                    analysis = await self.client.scan_file_async(f, wait_for_completion=True)
-                
-                result = analysis.to_dict() 
-                result.update({
-                    'file_name': os.path.basename(file_path),
-                    'file_size': os.path.getsize(file_path),
-                    'link': self._get_analysis_url(analysis.id)
-                })
-                # Extract relevant information
-                return result
-            except APIError as e:
-                await self._handle_api_error(e, delay)
+        # Upload the file
+        with open(file_path, 'rb') as f:
+            analysis = await self.client.scan_file_async(f, wait_for_completion=True)
+        
+        result = analysis.to_dict() 
+        result.update({
+            'file_name': os.path.basename(file_path),
+            'file_size': os.path.getsize(file_path),
+            'link': self._get_analysis_url(analysis.id)
+        })
+        # Extract relevant information
+        return result
     
-    async def analyze_url(self, url: str, retries=3, delay=10) -> dict[str, any]:
+    @retry_on_reached_limit(APIError, exception_handler=_handle_api_error, retries=3, delay=10)
+    async def analyze_url(self, url: str) -> dict[str, any]:
         """Analyze a URL using VirusTotal."""
-        for _ in range(retries):
-            try:
-                # Get URL analysis
-                analysis = await self.client.scan_url_async(url)
-                result = analysis.to_dict()
-                result.update({
-                    'url': url,
-                    'link': self._get_analysis_url(analysis.id)
-                })
-                # Extract relevant information
-                return result
-            except APIError as e:
-                await self._handle_api_error(e, delay)
+        # Get URL analysis
+        analysis = await self.client.scan_url_async(url)
+        result = analysis.to_dict()
+        result.update({
+            'url': url,
+            'link': self._get_analysis_url(analysis.id)
+        })
+        # Extract relevant information
+        return result
 
     def _get_analysis_url(self, analysis_id: str) -> str:
         # URL analysis
