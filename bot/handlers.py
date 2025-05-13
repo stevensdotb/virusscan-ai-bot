@@ -40,6 +40,8 @@ class Handlers:
             return response.json()['ip']
         except Exception as e:
             logger.error(_(f"Error getting public IP: {str(e)}"))
+        finally:
+            await self.http_client.aclose()
 
     def _is_url(self, text: str) -> bool:
         """Check if the given text is a valid URL."""
@@ -67,79 +69,23 @@ class Handlers:
         """Get the AI response for the given text."""
         return self.llm_client.analyze_vt_results(text, self._lang)
         
-    async def close(self):
+    def _close(self):
         """Close the handlers."""
         try:
-            await self.vt_client.close()
-            await self.http_client.aclose()
+            self.vt_client.close()
+            self.http_client.aclose()
         except Exception as e:
             logger.error(f"Error closing handlers: {str(e)}")
+        finally:
             self._response_message = None
+    
+    @classmethod
+    async def close_all(cls):
+        """Close all instances of handlers."""
+        if hasattr(cls, '_instance') and cls._instance:
+            await cls._instance._close()
 
-    async def start_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-        """Send a message when the command /start is issued."""
-        self._set_lang(update.effective_user.language_code)
-        _ = self._get_translation(self._lang[:2]).gettext
-
-        keyboard = [
-            [
-                InlineKeyboardButton(_("BOT_BUTTON_CHECK_IP"), callback_data='check_ip')
-            ]
-        ]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-
-        await update.message.reply_text(
-            _("BOT_WELCOME_MESSAGE").format(user=update.effective_user, config=config) + "\n\n"
-            + _("BOT_REQUEST_FILE_OR_URL"),
-            reply_markup=reply_markup
-        )
-
-    async def button_options(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-        """Handle button presses."""
-        query = update.callback_query
-        _ = self._get_translation(self._lang[:2]).gettext
-        
-        # CallbackQueries need to be answered, even if no notification to the user is needed
-        await query.answer()
-
-        if query.data == 'check_ip':
-            try:
-                ip = await self._get_public_ip()
-                await update.effective_message.reply_text(
-                    _("BOT_PUBLIC_IP").format(ip=ip)
-                )
-            except Exception as e:
-                await update.effective_message.reply_text(
-                    _("BOT_ERROR_IP_RETRIEVAL")
-                )
-                logger.error(_(f"Error getting public IP: {str(e)}"))
-
-    async def bot_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-        """Handle bot messages (user text, files, urls)."""
-        try:
-            self._set_lang(update.effective_user.language_code)
-            _ = self._get_translation(self._lang[:2]).gettext
-
-            user_message = update.message.text
-
-            if self._is_url(user_message):
-                user_message = json.dumps(await self.get_url_analysis(update, user_message))
-            
-            if file := await FileHandler.get_file(update.message):
-                user_message = json.dumps(await self.get_file_analysis(update, file))
-            
-            response = self._ai_response(user_message)
-        
-            if self._response_message is not None:
-                await self._response_message.edit_text(response, parse_mode=ParseMode.HTML)
-                self._response_message = None
-            else:
-                await update.message.reply_text(response, parse_mode=ParseMode.HTML)
-        except Exception as e:
-            logger.error(_(f"Error with VirusTotal analysis: {str(e)}"))
-            await update.message.reply_text(_("BOT_ERROR_FILE_ANALYSIS"))
-
-    async def get_file_analysis(self, update: Update, file) -> None:
+    async def _file_analysis(self, update: Update, file) -> dict[str, any]:
         """Handle file uploads."""
         _ = self._get_translation(self._lang[:2]).gettext
 
@@ -158,9 +104,10 @@ class Handlers:
             await self._response_message.edit_text(_("BOT_ERROR_FILE_ANALYSIS"))
         finally:
             #Clean up
-            os.remove(file_path)
+            if os.path.exists(file_path):
+                os.remove(file_path)
 
-    async def get_url_analysis(self, update: Update, url: str) -> None:
+    async def _url_analysis(self, update: Update, url: str) -> None:
         """Handle URL messages."""
         _ = self._get_translation(self._lang[:2]).gettext
         self._response_message = await update.message.reply_text(_("BOT_STATUS_ANALYZING_URL"))
@@ -171,10 +118,42 @@ class Handlers:
             logger.error(f"Error with VirusTotal URL analysis: {str(e)}")
             await self._response_message.edit_text(_("BOT_ERROR_URL_ANALYSIS"))
 
-    @classmethod
-    async def close_all(cls):
-        """Close all instances of handlers."""
-        if hasattr(cls, '_instance') and cls._instance:
-            await cls._instance.close()
+    async def start_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        """Send a message when the command /start is issued."""
+        self._set_lang(update.effective_user.language_code)
+        _ = self._get_translation(self._lang[:2]).gettext
+
+        await update.message.reply_text(
+            _("BOT_WELCOME_MESSAGE").format(user=update.effective_user, config=config) + "\n\n"
+            + _("BOT_REQUEST_FILE_OR_URL"),
+        )
+
+    async def bot_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        """Handle bot messages (user text, files, urls)."""
+        try:
+            self._set_lang(update.effective_user.language_code)
+            _ = self._get_translation(self._lang[:2]).gettext
+
+            user_message = update.message.text
+
+            if self._is_url(user_message):
+                user_message = json.dumps(await self._url_analysis(update, user_message))
+            
+            if file := await FileHandler.get_file(update.message):
+                file, file_type = file
+                analysis = await self._file_analysis(update, file)
+                user_message = json.dumps({'file_type': file_type, **analysis})
+
+            response = self._ai_response(user_message)
+        
+            if self._response_message is not None:
+                await self._response_message.edit_text(response, parse_mode=ParseMode.HTML)
+                self._response_message = None
+            else:
+                await update.message.reply_text(response, parse_mode=ParseMode.HTML)
+        except Exception as e:
+            logger.error(_(f"Error: {str(e)}"))
+            await update.message.reply_text(_("BOT_CURRENTLY_FAILING"))
+
 
 Handlers._instance = Handlers()

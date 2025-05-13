@@ -8,13 +8,14 @@ class Config:
     ALLOWED_LANGUAGES = ['en', 'es']
 
     TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
-    OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+    TELEGRAM_WEBHOOK_URL = os.getenv('TELEGRAM_WEBHOOK_URL')
     
     # Bot settings
     BOT_USERNAME = os.getenv('BOT_USERNAME', 'virus_scan_ai_bot')
     BOT_NAME = os.getenv('BOT_NAME', 'VScanAI')
     
     # Model settings
+    OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
     MODEL_NAME = os.getenv('MODEL_NAME', 'openai/gpt-4.1')
     MODEL_ENDPOINT = os.getenv('MODEL_ENDPOINT', 'https://models.github.ai/inference')
     

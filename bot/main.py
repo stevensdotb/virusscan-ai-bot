@@ -4,6 +4,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackQueryHandler
 from telegram import Update
+from telegram.error import TelegramError
 
 from .handlers import Handlers
 from .config import config
@@ -12,6 +13,14 @@ from .utils.logging import logger
 # Global application instance and condition variable for initialization
 application: Application = None
 bot_ready = asyncio.Condition()
+
+async def refresh_webhook():
+    """Refresh the webhook for a fresh start."""
+    try:
+        await application.bot.delete_webhook()
+        await application.bot.set_webhook(config.TELEGRAM_WEBHOOK_URL)
+    except TelegramError as e:
+        logger.error(f"Failed to set/delete webhook: {str(e)}")
 
 async def init_bot():
     """Create and initialize the Telegram bot application."""
@@ -35,12 +44,12 @@ async def init_bot():
                 handlers.bot_handler
             )
         )
-        app.add_handler(CallbackQueryHandler(handlers.button_options))
 
         # Signal that the bot is ready
         async with bot_ready:
             global application
             application = app
+            await refresh_webhook()
             bot_ready.notify_all()
         
         logger.info("Telegram bot initialized successfully.")
@@ -55,7 +64,7 @@ async def lifespan(app: FastAPI):
         await init_bot()
         yield
     finally:
-        if application:
+        if application.running:
             await application.stop()
             logger.info("Telegram bot shutdown completed.")
 
