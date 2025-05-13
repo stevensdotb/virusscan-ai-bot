@@ -4,26 +4,15 @@ A Telegram bot that uses AI to analyze files and URLs for potential malware thre
 
 ## Features
 
-- File and URL analysis using GitHub models
-- Support for files up to 5MB
-- Easy-to-use interface
+- Real-time File and URL analysis using VirusTotal
+- Tips and recommendations based on the analysis
 - Multi-language support (English and Spanish)
-- Real-time analysis with VirusTotal integration
-- Secure file handling without storage
-
-## Requirements
-
-- Python 3.12+
-- Azure Inference SDK
-- Telegram Bot Token
-- GitHub Models API Key
-- VirusTotal API Key
 
 ## Installation
 
 1. Clone the repository:
 ```bash
-git clone [URL_DEL_REPOSITORIO]
+git clone https://github.com/stevensdotb/virusscan-ai-bot
 ```
 
 2. Install dependencies:
@@ -35,27 +24,26 @@ pip install -r requirements.txt
 - Copy `.env.example` to `.env`
 - Add your API keys:
   - `TELEGRAM_BOT_TOKEN`
-  - `OPENAI_API_KEY`
+  - `TELEGRAM_WEBHOOK_URL`
   - `VT_API_KEY`
+  - `OPENAI_API_KEY` (Github Personal [Fine grained] Access Token)
 
 4. Run the bot:
 ```bash
-python -m bot.main
+uvicorn bot.main:app --reload
 ```
 
 ## Usage
 
 1. Start a conversation with the bot on Telegram
 2. Send a file or URL for analysis
-3. The bot will respond with a detailed analysis using GitHub models
+3. The bot will respond with a detailed analysis result from VirusTotal
+4. Ask the bot for tips and recommendations to avoid cyber threats
 
 ## Security Notes
 
 - Never send personal or sensitive files
-- The bot can only analyze files up to 5MB
-- Files are analyzed in memory and not stored
 - All analysis is done in real-time without storage
-- The bot uses secure API endpoints for all operations
 
 ## Technical Details
 
@@ -68,7 +56,3 @@ python -m bot.main
 ## Contributing
 
 Feel free to submit issues and enhancement requests!
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
